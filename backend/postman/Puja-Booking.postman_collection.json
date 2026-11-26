@@ -1,0 +1,72 @@
+{
+  "info": {
+    "name": "Puja Booking API",
+    "description": "Run Create booking first to save bookingId. Start the backend and MongoDB before sending requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "bookingId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Create booking",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Created', function () { pm.response.to.have.status(201); });",
+            "if (pm.response.code === 201) pm.collectionVariables.set('bookingId', pm.response.json().data._id);"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/bookings",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"devotee\": {\n    \"name\": \"Asha Sharma\",\n    \"phone\": \"+919876543210\",\n    \"email\": \"asha@example.com\"\n  },\n  \"pujaName\": \"Ganesh Puja\",\n  \"date\": \"2026-12-15\",\n  \"amount\": 1500\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      }
+    },
+    {
+      "name": "List bookings",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/bookings" }
+    },
+    {
+      "name": "Search, filter, sort and paginate",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/bookings?search=asha&status=Pending&sortBy=amount&order=asc&page=1&limit=10"
+      }
+    },
+    {
+      "name": "Get booking by ID",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/bookings/{{bookingId}}" }
+    },
+    {
+      "name": "Update booking status",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/bookings/{{bookingId}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"In Progress\"\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      }
+    },
+    {
+      "name": "Invalid booking ID (400)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/bookings/bad-id" }
+    },
+    {
+      "name": "Missing booking (404)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/bookings/000000000000000000000000" }
+    }
+  ]
+}
